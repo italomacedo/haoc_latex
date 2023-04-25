@@ -1,122 +1,303 @@
-% Options for packages loaded elsewhere
-\PassOptionsToPackage{unicode}{hyperref}
-\PassOptionsToPackage{hyphens}{url}
-%
+%% abtex2-modelo-relatorio-tecnico.tex, v-1.9.7 laurocesar
+%% Copyright 2012-2018 by abnTeX2 group at http://www.abntex.net.br/ 
+%%
+%% This work may be distributed and/or modified under the
+%% conditions of the LaTeX Project Public License, either version 1.3
+%% of this license or (at your option) any later version.
+%% The latest version of this license is in
+%%   http://www.latex-project.org/lppl.txt
+%% and version 1.3 or later is part of all distributions of LaTeX
+%% version 2005/12/01 or later.
+%%
+%% This work has the LPPL maintenance status `maintained'.
+%% 
+%% The Current Maintainer of this work is the abnTeX2 team, led
+%% by Lauro César Araujo. Further information are available on 
+%% http://www.abntex.net.br/
+%%
+%% This work consists of the files abntex2-modelo-relatorio-tecnico.tex,
+%% abntex2-modelo-include-comandos and abntex2-modelo-references.bib
+%%
+
+% ------------------------------------------------------------------------
+% ------------------------------------------------------------------------
+% abnTeX2: Modelo de Relatório Técnico/Acadêmico em conformidade com 
+% ABNT NBR 10719:2015 Informação e documentação - Relatório técnico e/ou
+% científico - Apresentação
+% ------------------------------------------------------------------------ 
+% ------------------------------------------------------------------------
+
 \documentclass[
-]{article}
-\usepackage{amsmath,amssymb}
-\usepackage{lmodern}
-\usepackage{iftex}
-\ifPDFTeX
-  \usepackage[T1]{fontenc}
-  \usepackage[utf8]{inputenc}
-  \usepackage{textcomp} % provide euro and other symbols
-\else % if luatex or xetex
-  \usepackage{unicode-math}
-  \defaultfontfeatures{Scale=MatchLowercase}
-  \defaultfontfeatures[\rmfamily]{Ligatures=TeX,Scale=1}
-\fi
-% Use upquote if available, for straight quotes in verbatim environments
-\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
-\IfFileExists{microtype.sty}{% use microtype if available
-  \usepackage[]{microtype}
-  \UseMicrotypeSet[protrusion]{basicmath} % disable protrusion for tt fonts
-}{}
+	% -- opções da classe memoir --
+	12pt,				% tamanho da fonte
+	openright,			% capítulos começam em pág ímpar (insere página vazia caso preciso)
+	twoside,			% para impressão em recto e verso. Oposto a oneside
+	a4paper,			% tamanho do papel. 
+	% -- opções da classe abntex2 --
+	%chapter=TITLE,		% títulos de capítulos convertidos em letras maiúsculas
+	%section=TITLE,		% títulos de seções convertidos em letras maiúsculas
+	%subsection=TITLE,	% títulos de subseções convertidos em letras maiúsculas
+	%subsubsection=TITLE,% títulos de subsubseções convertidos em letras maiúsculas
+	% -- opções do pacote babel --
+	english,			% idioma adicional para hifenização
+	french,				% idioma adicional para hifenização
+	spanish,			% idioma adicional para hifenização
+	brazil,				% o último idioma é o principal do documento
+	]{abntex2}
+
+
+% ---
+% PACOTES
+% ---
+
+% ---
+% Pacotes fundamentais 
+% ---
+\usepackage{lmodern}			% Usa a fonte Latin Modern
+\usepackage[T1]{fontenc}		% Selecao de codigos de fonte.
+\usepackage[utf8]{inputenc}		% Codificacao do documento (conversão automática dos acentos)
+\usepackage{indentfirst}		% Indenta o primeiro parágrafo de cada seção.
+\usepackage{color}				% Controle das cores
+\usepackage{graphicx}			% Inclusão de gráficos
+\usepackage{microtype} 			% para melhorias de justificação
+\usepackage{fancyhdr}
+\usepackage{tikz}
+\usetikzlibrary{calc}
+\usepackage{tikzpagenodes}
+% ---
+
+% ---
+% Pacotes adicionais, usados no anexo do modelo de folha de identificação
+% ---
+\usepackage{multicol}
+\usepackage{multirow}
+% ---
+	
+% ---
+% Pacotes adicionais, usados apenas no âmbito do Modelo Canônico do abnteX2
+% ---
+\usepackage{lipsum}				% para geração de dummy text
+% ---
+
+% ---
+% Pacotes de citações
+% ---
+\usepackage[brazilian,hyperpageref]{backref}	 % Paginas com as citações na bibl
+\usepackage[alf]{abntex2cite}	% Citações padrão ABNT
+\usepackage[style=abnt]{biblatex}
+\addbibresource{export-data.bib}   
+
+% --- 
+% CONFIGURAÇÕES DE PACOTES
+% --- 
+\usepackage{appendix}
+
+% ---
+% Configurações do pacote backref
+% Usado sem a opção hyperpageref de backref
+\renewcommand{\backrefpagesname}{Citado na(s) página(s):~}
+% Texto padrão antes do número das páginas
+\renewcommand{\backref}{}
+% Define os textos da citação
+\renewcommand*{\backrefalt}[4]{
+	\ifcase #1 %
+		Nenhuma citação no texto.%
+	\or
+		Citado na página #2.%
+	\else
+		Citado #1 vezes nas páginas #2.%
+	\fi}%
+% ---
+
+% ---
+% Informações de dados para CAPA e FOLHA DE ROSTO
+% ---
+\titulo{Documento de especificação de requisitos}
+\autor{Italo Macêdo do Amaral Costa}
+\local{Brasil}
+\data{2023, v-1.0.0}
+\instituicao{%
+  Hospital Alemão Oswaldo Cruz
+  \par
+  Programa de Apoio ao Desenvolvimento Institucional do Sistema Único de Saúde}
+\tipotrabalho{Relatório técnico}
+% O preambulo deve conter o tipo do trabalho, o objetivo, 
+% o nome da instituição e a área de concentração 
+\preambulo{Projeto de Qualificação de Dados Assistenciais (PQDAS)}
+% ---
+
+% ---
+% Configurações de aparência do PDF final
+\fancyhead[L]{
+\begin{tikzpicture}[remember picture,overlay]
+\draw  let \p1=($(current page.north)-(current page header area.south)$),
+      \n1={veclen(\x1,\y1)} in
+node [inner sep=0,outer sep=0,below right] 
+      at (current page.north west){\includegraphics[scale=1]{header.pdf}};      
+\end{tikzpicture}}
+
+% alterando o aspecto da cor azul
+\definecolor{blue}{RGB}{41,5,195}
+
+% informações do PDF
 \makeatletter
-\@ifundefined{KOMAClassName}{% if non-KOMA class
-  \IfFileExists{parskip.sty}{%
-    \usepackage{parskip}
-  }{% else
-    \setlength{\parindent}{0pt}
-    \setlength{\parskip}{6pt plus 2pt minus 1pt}}
-}{% if KOMA class
-  \KOMAoptions{parskip=half}}
-\makeatother
-\usepackage{xcolor}
-\usepackage{longtable,booktabs,array}
-\usepackage{calc} % for calculating minipage widths
-% Correct order of tables after \paragraph or \subparagraph
-\usepackage{etoolbox}
-\makeatletter
-\patchcmd\longtable{\par}{\if@noskipsec\mbox{}\fi\par}{}{}
-\makeatother
-% Allow footnotes in longtable head/foot
-\IfFileExists{footnotehyper.sty}{\usepackage{footnotehyper}}{\usepackage{footnote}}
-\makesavenoteenv{longtable}
-\setlength{\emergencystretch}{3em} % prevent overfull lines
-\providecommand{\tightlist}{%
-  \setlength{\itemsep}{0pt}\setlength{\parskip}{0pt}}
-\setcounter{secnumdepth}{-\maxdimen} % remove section numbering
-\ifLuaTeX
-  \usepackage{selnolig}  % disable illegal ligatures
-\fi
-\IfFileExists{bookmark.sty}{\usepackage{bookmark}}{\usepackage{hyperref}}
-\IfFileExists{xurl.sty}{\usepackage{xurl}}{} % add URL line breaks if available
-\urlstyle{same} % disable monospaced font for URLs
 \hypersetup{
-  hidelinks,
-  pdfcreator={LaTeX via pandoc}}
+     	%pagebackref=true,
+		pdftitle={\@title}, 
+		pdfauthor={\@author},
+    	pdfsubject={\imprimirpreambulo},
+	    pdfcreator={LaTeX with abnTeX2},
+		pdfkeywords={abnt}{latex}{abntex}{abntex2}{relatório técnico}, 
+		colorlinks=true,       		% false: boxed links; true: colored links
+    	linkcolor=blue,          	% color of internal links
+    	citecolor=blue,        		% color of links to bibliography
+    	filecolor=magenta,      		% color of file links
+		urlcolor=blue,
+		bookmarksdepth=4
+}
+\makeatother
+% --- 
 
-\author{}
-\date{}
+% --- 
+% Espaçamentos entre linhas e parágrafos 
+% --- 
 
+% O tamanho do parágrafo é dado por:
+\setlength{\parindent}{1.3cm}
+
+% Controle do espaçamento entre um parágrafo e outro:
+\setlength{\parskip}{0.2cm}  % tente também \onelineskip
+
+% ---
+% compila o indice
+% ---
+\makeindex
+% ---
+
+% ----
+% Início do documento
+% ----
 \begin{document}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.2591}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 2\tabcolsep) * \real{0.7409}}@{}}
-\toprule()
-\endhead
-\begin{minipage}[t]{\linewidth}\raggedright
-\begin{quote}
-\textbf{PROJETO}
-\end{quote}
-\end{minipage} & \\
-\begin{minipage}[t]{\linewidth}\raggedright
-\begin{quote}
-\textbf{Gestor do Projeto}
-\end{quote}
-\end{minipage} & \\
-\begin{minipage}[t]{\linewidth}\raggedright
-\begin{quote}
-\textbf{e-mail}
-\end{quote}
-\end{minipage} & \\
-\begin{minipage}[t]{\linewidth}\raggedright
-\begin{quote}
-\textbf{Telefone}
-\end{quote}
-\end{minipage} & \\
-\begin{minipage}[t]{\linewidth}\raggedright
-\begin{quote}
-\textbf{Responsável}
-\end{quote}
-\end{minipage} & \\
-\begin{minipage}[t]{\linewidth}\raggedright
-\begin{quote}
-\textbf{e-mail}
-\end{quote}
-\end{minipage} & \\
-\begin{minipage}[t]{\linewidth}\raggedright
-\begin{quote}
-\textbf{Telefone}
-\end{quote}
-\end{minipage} & \\
-\bottomrule()
-\end{longtable}
+% Seleciona o idioma do documento (conforme pacotes do babel)
+%\selectlanguage{english}
+\selectlanguage{brazil}
 
-\begin{longtable}[]{@{}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1570}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.2354}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.5022}}
-  >{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{0.1054}}@{}}
-\toprule()
-\endhead
-\multicolumn{4}{@{}>{\raggedright\arraybackslash}p{(\columnwidth - 6\tabcolsep) * \real{1.0000} + 6\tabcolsep}@{}}{%
-\textbf{Histórico de revisões}} \\
-Data & Autor & Descrição & Versão \\
-& & & 0.1 \\
-\bottomrule()
-\end{longtable}
+% Retira espaço extra obsoleto entre as frases.
+\frenchspacing 
+
+% ----------------------------------------------------------
+% ELEMENTOS PRÉ-TEXTUAIS
+% ----------------------------------------------------------
+% \pretextual
+
+% ---
+% Capa HAOC
+% ---
+\begin{tikzpicture}[overlay,remember picture]
+ \node[anchor=north west,inner sep=0pt]at ([xshift=-0.5cm,yshift=1cm]current page.north west) {\includegraphics[scale=1]{header.pdf}};
+ \end{tikzpicture}
+
+\begin{historicorevisao}
+\begin{table}[!h]
+\centering
+\begin{tabular}{|p{4cm}p{4cm}p{4cm}p{4cm}|}
+\hline
+\multicolumn{1}{|p{4cm}|}{\textbf{Projeto}}       & \multicolumn{3}{p{12cm}|}{Projeto de Qualificação de Dados Assistenciais (PQDAS)} \\ \hline
+\multicolumn{1}{|p{4cm}|}{\textbf{Gestor do projeto}}       & \multicolumn{3}{p{12cm}|}{Tathiana Soares Machado Velasco} \\ \hline
+\multicolumn{1}{|p{4cm}|}{\textbf{e-mail}}       & \multicolumn{3}{p{12cm}|}{tvelasco@haoc.com.br} \\ \hline
+\multicolumn{1}{|p{4cm}|}{\textbf{Telefone}}       & \multicolumn{3}{p{12cm}|}{(011) 967564441} \\ \hline
+\multicolumn{1}{|p{4cm}|}{\textbf{Responsável}}       & \multicolumn{3}{p{12cm}|}{Haliton de Oliveira Junior} \\ \hline
+\multicolumn{1}{|p{4cm}|}{\textbf{e-mail}}       & \multicolumn{3}{p{12cm}|}{haoliveira@haoc.com.br} \\ \hline
+\multicolumn{1}{|p{4cm}|}{\textbf{Telefone}}       & \multicolumn{3}{p{12cm}|}{(11) 3549-0581} \\ \hline
+\end{tabular}
+\end{table}
+\end{historicorevisao}
+
+\begin{center}
+    NOME DO PROJETO
+\end{center}
+
+\begin{historicorevisao}
+\begin{table}[!h]
+\centering
+\begin{tabular}{|p{4cm}p{4cm}p{4cm}p{4cm}|}
+\hline
+\multicolumn{4}{|c|}{\textbf{Histórico de revisões}}                                                                                    \\ \hline
+\multicolumn{1}{|c|}{Data}       & \multicolumn{1}{c|}{Autor}        & \multicolumn{1}{c|}{Descrição}                          & Versão \\ \hline
+\multicolumn{1}{|c|}{16/11/2022} & \multicolumn{1}{c|}{Italo Macêdo} & \multicolumn{1}{c|}{Versão inicial do documento}        & 0.1    \\ \hline
+\multicolumn{1}{|c|}{22/02/2023} & \multicolumn{1}{c|}{Italo Macêdo} & \multicolumn{1}{c|}{Versão pós-diligência consultoria.} & 0.9    \\ \hline
+\multicolumn{1}{|c|}{24/04/2023} & \multicolumn{1}{c|}{Italo Macêdo} & \multicolumn{1}{c|}{Versão pós-diligência 2 consultoria.} & 1.0    \\ \hline
+\end{tabular}
+\end{table}
+\end{historicorevisao}
+\cleardoublepage
+
+% ---
+% inserir lista de ilustrações
+% ---
+\pdfbookmark[0]{\listfigurename}{lof}
+\listoffigures*
+\cleardoublepage
+% ---
+
+% ---
+% inserir lista de tabelas
+% ---
+\pdfbookmark[0]{\listtablename}{lot}
+\listoftables*
+\cleardoublepage
+% ---
+
+% ---
+% inserir lista de abreviaturas e siglas
+% ---
+\begin{siglas}
+\item[ANS] Agência Nacional de Saúde Suplementar
+\item[API] Application Programming Interface
+\item[CID-10] Classificação Estatística Internacional de Doenças e Problemas Relacionados a Saúde-10
+\item[CBO] Classificação Brasileira de Ocupações
+\item[COPISS] Comitê de Padronização da Saúde Suplementar 
+\item[DIPRO] Diretoria de Produtos da ANS
+\item[FHIR] Fast Healthcare Interoperability Resources
+\item[GEMOA] Gerência de Monitoramento Assistencial - DIPRO/ANS
+\item[GEPIN Gerência de Padronização, Interoperabilidade e Análise de Informação - DIDES/ANS
+\item[GETI] Gerência de Tecnologia de Informação - DIDES/ANS
+\item[HAOC] Hospital Alemão Oswaldo Cruz
+\item[HL7] Health Level 7
+\item[IDSS] Índice de Desempenho da Saúde Suplementar
+\item[ISO] International Organization for Standardization	
+\item[JSON] Notação de Objetos JavaScript (do inglês JavaScript Object Notation)
+\item[MS] Ministério da Saúde
+\item[PROADI] Programa de Apoio ao Desenvolvimento Institucional do SUS
+\item[RNDS] Rede Nacional de Dados em Saúde
+\item[PQDAS] Padronização e Qualificação dos Dados Assistenciais da Saúde Suplementar
+\item[SIP] Sistema de Informação de Produtos da ANS
+\item[SUS] Sistema Único de Saúde
+\item[TISS] Troca de Informações em Saúde Suplementar
+\item[TUSS] Terminologia Unificada da Saúde Suplementar  
+\item[XML] Extensible Markup Language
+\end{siglas}
+% ---
+
+% ---
+% inserir o sumario
+% ---
+\pdfbookmark[0]{\contentsname}{toc}
+\tableofcontents*
+\cleardoublepage
+% ---
+
+
+% ----------------------------------------------------------
+% ELEMENTOS TEXTUAIS
+% ----------------------------------------------------------
+\textual
+
+% ----------------------------------------------------------
+% Introdução (exemplo de capítulo sem numeração, mas presente no Sumário)
+% ----------------------------------------------------------
+\chapter{Objetivo deste documento}
+Este documento tem como finalidade descrever os requisitos a serem atendidos conforme documento de visão: funcionais e não funcionais. Tais informações serão descritas nas seções a seguir.
 
 \end{document}
